@@ -13,26 +13,7 @@ private:
 public:
     simulator();
     simulator(int const initial_store[]);
-    ~simulator();
+    void print_store();
 };
-
-simulator::simulator()
-{
-    for (int i = 0; i < 32; i++){
-        this->store[i] = 0;
-    }
-}
-
-simulator::simulator(int const initial_store[])
-{
-    for (int i = 0; i < 32; i++){
-        this->store[i] = initial_store[i];
-    }
-}
-
-simulator::~simulator()
-{
-}
-
 
 #endif
