@@ -13,6 +13,7 @@ int flip_bits(int bits){
 }
 
 memory_line::memory_line(int bits){
+    this->value = flip_bits(bits);
     this->operand = flip_bits(bits & 0xFFF80000);
     this->opcode = flip_bits((bits & 0x00070000) << 13);
     this->unused_bits = flip_bits((bits & 0x0000FFFF) << 16);
@@ -26,6 +27,10 @@ int memory_line::memory_line_to_store_format(){
     return bits;
 }
 
+int memory_line::get_value(){
+    return this->value;
+}
+
 int memory_line::get_operand(){
     return this->operand;
 }
@@ -36,4 +41,20 @@ int memory_line::get_opcode(){
 
 int memory_line::get_unused(){
     return this->unused_bits;
+}
+
+void memory_line::set_value(int value){
+    this->value = value;
+}
+
+void memory_line::set_operand(int operand){
+    this->operand = operand;
+}
+
+void memory_line::set_opcode(int opcode){
+    this->opcode = opcode;
+}
+
+void memory_line::set_unused(int unused){
+    this->unused_bits = unused_bits;
 }
