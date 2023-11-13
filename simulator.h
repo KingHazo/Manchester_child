@@ -14,6 +14,10 @@ public:
     simulator();
     simulator(int const initial_store[]);
     void print_store();
+    void increment();
+    void fetch();
+    void decode();
+    void execute();
 };
 
 #endif

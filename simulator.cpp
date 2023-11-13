@@ -30,3 +30,19 @@ void simulator::print_store(){
     }
     
 }
+
+void simulator::increment(){
+
+}
+
+void simulator::fetch(){
+
+}
+
+void simulator::decode(){
+
+}
+
+void simulator::execute(){
+
+}
