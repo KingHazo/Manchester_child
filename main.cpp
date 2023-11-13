@@ -8,7 +8,6 @@ using namespace std;
 
 void convert_file_to_ints(ifstream& file, int machine_code[]){
     string line;
-    size_t* position_of_first_char = new size_t;
     for (int i = 0; i < 32; i++){
         file >> line;
         if (line.length() > 32){
@@ -53,6 +52,17 @@ int main(){
     m_baby = create_baby(machine_code_filename);
 
     m_baby->print_store();
+
+    // steps of the baby's fetch execute cycle
+    // 1. increment control instruction
+    m_baby->increment();
+    // 2. fetch the instruction into the present instruction variable
+    m_baby->fetch();
+    // 3. decode the instruction from the present instrcution
+    m_baby->decode();
+    // 3.1 compare the opcode to the necessary instructions
+    m_baby->execute();
+    // 3.2 perform instruction as required
     
     return 0;
 }
