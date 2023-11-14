@@ -73,6 +73,12 @@ int main(){
         m_baby->print_present_instruction();
         cout <<"current instruction: " << endl;
         m_baby->print_current_instruction();
+
+        if (m_baby->get_is_stopped())
+        {
+            break;
+        }
+        
     }
 
     return 0;
