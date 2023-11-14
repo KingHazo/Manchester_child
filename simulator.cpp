@@ -121,10 +121,7 @@ void simulator::decode_and_execute(){
     case 3:
     {
         // function 3: STO, Copy the content of the accumulator to the specified store line
-        memory_line* operand_value = new memory_line(this->accumulator);
-        this->accumulator = operand_value->memory_line_to_store_format();
-        
-        delete operand_value;
+        this->store[present_instruction->get_operand()] = this->accumulator;
         break;
     }
     case 4:
@@ -134,8 +131,7 @@ void simulator::decode_and_execute(){
         memory_line* operand_value = new memory_line(this->store[present_instruction->get_operand()]);
 
         accumulator->set_value(accumulator->get_value()-operand_value->get_value());
-
-        this->control_instruction = accumulator->memory_line_to_store_format();
+        this->accumulator = accumulator->memory_line_to_store_format();
         
         delete accumulator;
         delete operand_value;
@@ -148,8 +144,7 @@ void simulator::decode_and_execute(){
         memory_line* operand_value = new memory_line(this->store[present_instruction->get_operand()]);
 
         accumulator->set_value(accumulator->get_value()-operand_value->get_value());
-
-        this->control_instruction = accumulator->memory_line_to_store_format();
+        this->accumulator = accumulator->memory_line_to_store_format();
         
         delete accumulator;
         delete operand_value;
