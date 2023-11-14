@@ -23,5 +23,6 @@ public:
     int memory_line_to_store_format();
 };
 
+int flip_bits(int bits);
 
 #endif

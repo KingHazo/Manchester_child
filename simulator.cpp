@@ -20,12 +20,12 @@ simulator::simulator(int const initial_store[])
 }
 
 void simulator::print_store(){
-    for (int index = 0; index < 10; index++)
+    for (int index = 0; index < 32; index++)
     {
         int line = this->store[index];
         for (int bit = 0; bit < 32; bit++)
         {
-            cout << ((line >> 31-bit) & 1);
+            cout << ((((line >> 31-bit) & 1) == 1) ? '#':' ') ;
         }
         cout << endl;
     }
@@ -38,6 +38,7 @@ void simulator::print_accumulator(){
     {
         cout << ((line >> 31-bit) & 1);
     }
+    cout << " value " << flip_bits(this->accumulator);
     cout << endl;
 }
 
@@ -85,14 +86,16 @@ void simulator::decode_and_execute(){
     {
     case 0:
     {
-        // NOT TESTED
+        cout << "jumping to line: " << flip_bits(store[present_instruction->get_operand()]) << endl;
+        // TESTED AND SEEMS FINE
         // function 0: JMP, Copy content of the specified line into the CI
         this->control_instruction = store[present_instruction->get_operand()];
+        
         break;
     }
     case 1:
     {
-        //NOT TESTED
+        // NOT TESTED YET
         // function 1: JRP, Add the content of the specified line into the CI
         memory_line* CI_line = new memory_line(this->control_instruction);
         memory_line* operand_value = new memory_line(this->store[present_instruction->get_operand()]);
@@ -117,6 +120,7 @@ void simulator::decode_and_execute(){
         operand_value->set_value(-(operand_value->get_value()));
 
         this->accumulator = operand_value->memory_line_to_store_format();
+        cout << "loading value: " << flip_bits(operand_value->memory_line_to_store_format()) << " to accumulator"<< endl;
 
         delete operand_value;
         break;
@@ -126,6 +130,7 @@ void simulator::decode_and_execute(){
         // TESTED AND SEEMS FINE
         // function 3: STO, Copy the content of the accumulator to the specified store line
         this->store[present_instruction->get_operand()] = this->accumulator;
+        cout << "storing accumulator: " << flip_bits(this->accumulator) << " in line: " << present_instruction->get_operand() << endl;
         break;
     }
     case 4:
@@ -134,7 +139,9 @@ void simulator::decode_and_execute(){
         // function 4: SUB, Subtract the content of the specified line from the accumulator
         memory_line* accumulator = new memory_line(this->accumulator);
         memory_line* operand_value = new memory_line(this->store[present_instruction->get_operand()]);
-
+        
+        cout << "subtracting " << operand_value->get_value() << " from " << accumulator->get_value() << endl;
+        
         accumulator->set_value(accumulator->get_value()-operand_value->get_value());
         this->accumulator = accumulator->memory_line_to_store_format();
         
@@ -149,6 +156,8 @@ void simulator::decode_and_execute(){
         memory_line* accumulator = new memory_line(this->accumulator);
         memory_line* operand_value = new memory_line(this->store[present_instruction->get_operand()]);
 
+        cout << "subtracting " << operand_value->get_value() << " from " << accumulator->get_value() << endl;
+
         accumulator->set_value(accumulator->get_value()-operand_value->get_value());
         this->accumulator = accumulator->memory_line_to_store_format();
         
@@ -158,13 +167,17 @@ void simulator::decode_and_execute(){
     }
     case 6:
     {
-        // NOT TESTED
+        // TESTED AND SEEMS FINE
         // function 6: CMP, If the accumulator is less than 0 increment the CI
         memory_line* accumulator = new memory_line(this->accumulator);
+        cout << "if " << accumulator->get_value() << " < 0, increment counter. ";
+        
         if (accumulator->get_value() < 0)
         {
+            cout << "                  incrementing";
             this->increment();
         }
+        cout << endl;
         delete accumulator;
         break;
     }

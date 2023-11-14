@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <time.h>
 
 #include "simulator.h"
 
@@ -47,38 +48,31 @@ simulator* create_baby(string MC_filename){
 
 int main(){
     simulator* m_baby;
-    string machine_code_filename = "BabyTest1-MC.txt";
+    string machine_code_filename = "marquee.txt";
 
     m_baby = create_baby(machine_code_filename);
 
-    cout << endl << "store: " << endl;
-    m_baby->print_store();
-    cout << endl << "accumulator: " << endl;
-    m_baby->print_accumulator();
-    cout << endl <<"present instruction: " << endl;
-    m_baby->print_present_instruction();
-    cout <<"current instruction: " << endl;
-    m_baby->print_current_instruction();
+    struct timespec remaining, request = {0, 5000000};
 
-    for (int i = 0; i < 10; i ++){
+    while(true){
+        nanosleep(&request, &remaining);
         m_baby->increment();
         m_baby->fetch();
-        m_baby->decode_and_execute();
-
-        cout << endl << "store: " << endl;
+        
         m_baby->print_store();
-        cout << endl << "accumulator: " << endl;
+        cout << "accumulator: " << endl;
         m_baby->print_accumulator();
+        cout << "current instruction: " << endl;
+        m_baby->print_current_instruction();
         cout << endl <<"present instruction: " << endl;
         m_baby->print_present_instruction();
-        cout <<"current instruction: " << endl;
-        m_baby->print_current_instruction();
+        
+        m_baby->decode_and_execute();
 
         if (m_baby->get_is_stopped())
         {
             break;
         }
-        
     }
 
     return 0;
