@@ -4,7 +4,6 @@
 class memory_line
 {
 private:
-    int value;
     int operand;
     int opcode;
     int unused_bits;

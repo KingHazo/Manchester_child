@@ -51,18 +51,29 @@ int main(){
 
     m_baby = create_baby(machine_code_filename);
 
+    cout << endl << "store: " << endl;
     m_baby->print_store();
+    cout << endl << "accumulator: " << endl;
+    m_baby->print_accumulator();
+    cout << endl <<"present instruction: " << endl;
+    m_baby->print_present_instruction();
+    cout <<"current instruction: " << endl;
+    m_baby->print_current_instruction();
 
-    // steps of the baby's fetch execute cycle
-    // 1. increment control instruction
-    m_baby->increment();
-    // 2. fetch the instruction into the present instruction variable
-    m_baby->fetch();
-    // 3. decode the instruction from the present instrcution
-    m_baby->decode();
-    // 3.1 compare the opcode to the necessary instructions
-    m_baby->execute();
-    // 3.2 perform instruction as required
-    
+    for (int i = 0; i < 10; i ++){
+        m_baby->increment();
+        m_baby->fetch();
+        m_baby->decode_and_execute();
+
+        cout << endl << "store: " << endl;
+        m_baby->print_store();
+        cout << endl << "accumulator: " << endl;
+        m_baby->print_accumulator();
+        cout << endl <<"present instruction: " << endl;
+        m_baby->print_present_instruction();
+        cout <<"current instruction: " << endl;
+        m_baby->print_current_instruction();
+    }
+
     return 0;
 }
