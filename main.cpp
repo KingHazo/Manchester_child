@@ -2,10 +2,14 @@
 #include <string>
 #include <fstream>
 #include <time.h>
+#include <cstdlib>
 
 #include "simulator.h"
 
 using namespace std;
+
+void menuOptions();
+int getValInput();
 
 void convert_file_to_ints(ifstream& file, int machine_code[]){
     string line;
@@ -46,13 +50,11 @@ simulator* create_baby(string MC_filename){
     }
 }
 
-int main(){
-    simulator* m_baby;
-    string machine_code_filename = "marquee.txt";
-
-    m_baby = create_baby(machine_code_filename);
+void run_baby(simulator* m_baby)
+{
 
     struct timespec remaining, request = {0, 5000000};
+
 
     while(true){
         nanosleep(&request, &remaining);
@@ -74,6 +76,106 @@ int main(){
             break;
         }
     }
+}
 
-    return 0;
+
+
+/*
+* Validates input from user for main menu
+* @return int the validated integer value from the user
+*/
+int getValInput()
+{
+    string input ="";
+    bool isInt = false;
+
+    do
+    {
+        //I would never normally be this pedantic in validation
+        //Gets input, goes through the input checking each character is a digit and not a char
+        cin >> input;
+
+        int inputLength = input.length();
+
+        for (int i = 0; i < inputLength; i++)
+        {
+            if (!isdigit(input[i]))
+            {
+                cout << "INVALID INPUT - CHAR DETECTED" << endl;
+                break;
+            }
+            else
+            {
+                isInt = true;
+            }
+        }
+    } while (!isInt);
+
+    return atoi(input.c_str());
+    
+}
+
+
+int main(){
+    // variables for menu function
+
+    simulator* m_baby;
+    string input;
+    int result = 0;
+    int parseOut;
+
+    while (true)
+    {
+        menuOptions(); //displays menu options
+
+        result = getValInput();
+
+        switch (result)
+        {
+            case 1:
+                cout << "Option 1 chosen" << endl; // Runs simulator using "marquee.txt"
+                m_baby = create_baby("marquee.txt");
+                run_baby(m_baby);
+                break;
+            case 2:
+                cout << "Option 2 chosen" << endl;
+                cout << "Unsure if this will work yet lol" << endl;
+                //(I cannot for the life of me decipher some of the sim functions)
+                cout << "Input a filename:";
+                cin >> input;
+                cout << endl;
+                m_baby = create_baby(input);
+                run_baby(m_baby);
+                break;
+            case 3:
+                cout << "Option 3 chosen" << endl;
+                cout << "To be implemented when assembler exists" << endl;
+                break;
+            case 4:
+                cout << "Option 4 chosen" << endl;
+                cout << "To be implemented when assembler exists" << endl;
+                break;
+            case 5:
+                cout << "Option 5 chosen, au revoir!" << endl;
+                exit(0);
+                break;
+            default:
+                cout << "Invalid input. Try again" << endl;
+                break;
+        }
+    }
+}
+
+/*
+* Prints menu options
+*
+*/
+void menuOptions()
+{
+    cout << "Please select an option: " << endl;
+    cout << "1. Simulate a basic, starter program using machine code" << endl;
+    cout << "2. Simulate a program of your choice using machine code" << endl;
+    cout << "3. Compile a basic program from assembly code" << endl;
+    cout << "4. Compile a program of your choice from assembly code" << endl;
+    cout << "5. Exit the program" << endl;
 }
