@@ -134,7 +134,7 @@ int main(){
         {
             case 1:
                 cout << "Option 1 chosen" << endl; // Runs simulator using "fibonacci.txt"
-                m_baby = create_baby("test.txt");
+                m_baby = create_baby("fibonacci.txt");
                 run_baby(m_baby);
                 break;
             case 2:
