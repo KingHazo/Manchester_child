@@ -13,7 +13,7 @@ int getValInput();
 
 void convert_file_to_ints(ifstream& file, int machine_code[]){
     string line;
-    for (int i = 0; i < 32; i++){
+    for (int i = 0; i < 48; i++){
         file >> line;
         if (line.length() > 32){
             throw new std::out_of_range("machine code string too large");
@@ -21,7 +21,7 @@ void convert_file_to_ints(ifstream& file, int machine_code[]){
         // string to long is used here instead of string to int because the function
         // assumes the input is unsigned, and would instead only assume a negative value when
         // there is a leading '-' we'll use string to long and then transfer the bits instead
-        machine_code[i] = (int)stol(line, nullptr, 2);
+        machine_code[i] = (int)stoll(line, nullptr, 2);
     }
 }
 
@@ -32,7 +32,7 @@ simulator* create_baby(string MC_filename){
     } else {
         file.open(MC_filename);
         if (file){
-            int machine_code[32];
+            int machine_code[48];
             try{
                 convert_file_to_ints(file, machine_code);
                 file.close();
@@ -64,7 +64,7 @@ void run_baby(simulator* m_baby)
         m_baby->print_store();
         cout << "accumulator: " << endl;
         m_baby->print_accumulator();
-        cout << "current instruction: " << endl;
+        cout << "control instruction: " << endl;
         m_baby->print_current_instruction();
         cout << endl <<"present instruction: " << endl;
         m_baby->print_present_instruction();
@@ -133,8 +133,8 @@ int main(){
         switch (result)
         {
             case 1:
-                cout << "Option 1 chosen" << endl; // Runs simulator using "marquee.txt"
-                m_baby = create_baby("marquee.txt");
+                cout << "Option 1 chosen" << endl; // Runs simulator using "fibonacci.txt"
+                m_baby = create_baby("test.txt");
                 run_baby(m_baby);
                 break;
             case 2:

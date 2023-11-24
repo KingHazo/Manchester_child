@@ -7,25 +7,25 @@ using namespace std;
 
 simulator::simulator()
 {
-    for (int i = 0; i < 32; i++){
+    for (int i = 0; i < 48; i++){
         this->store[i] = 0;
     }
 }
 
 simulator::simulator(int const initial_store[])
 {
-    for (int i = 0; i < 32; i++){
+    for (int i = 0; i < 48; i++){
         this->store[i] = initial_store[i];
     }
 }
 
 void simulator::print_store(){
-    for (int index = 0; index < 32; index++)
+    for (int index = 0; index < 48; index++)
     {
         int line = this->store[index];
         for (int bit = 0; bit < 32; bit++)
         {
-            cout << ((((line >> 31-bit) & 1) == 1) ? '#':' ') ;
+            cout << ((((line >> 31-bit) & 1) == 1) ? '1':'0') ;
         }
         cout << endl;
     }
@@ -99,13 +99,13 @@ void simulator::decode_and_execute(){
         // function 1: JRP, Add the content of the specified line into the CI
         memory_line* CI_line = new memory_line(this->control_instruction);
         memory_line* operand_value = new memory_line(this->store[present_instruction->get_operand()]);
-        
+        cout << "incrementing CI by: " << flip_bits(store[present_instruction->get_operand()]) << endl;
         // this can potentially go horribly wrong, but I don't remember 
         // one of the requirements being prevent the simulation from breaking
         // if the CI is set to a value above the size of the store variable,
         // the program will have a seg fault and break
         CI_line->set_operand(CI_line->get_operand()+operand_value->get_value());
-
+        
         this->control_instruction = CI_line->memory_line_to_store_format();
         
         delete CI_line;
@@ -185,7 +185,56 @@ void simulator::decode_and_execute(){
     {
         // TESTED AND SEEMS FINE
         // function 7: STP, Halt the Baby and light the 'stop lamp'
+        cout << "HALTED" << endl;
         this->isStopped = true;
+        break;
+    }
+    case 8:
+    {
+        // Add contents of specified to accumulator
+        memory_line* accumulator = new memory_line(this->accumulator);
+        memory_line* operand_value = new memory_line(this->store[present_instruction->get_operand()]);
+
+        cout << "adding " << operand_value->get_value() << " to " << accumulator->get_value() << endl;
+
+        accumulator->set_value(accumulator->get_value()+operand_value->get_value());
+        this->accumulator = accumulator->memory_line_to_store_format();
+        
+        delete accumulator;
+        delete operand_value;
+        break;
+    }
+    case 9:
+    {
+        // indirect jump if positive
+        memory_line* accumulator = new memory_line(this->accumulator);
+        cout << "if " << accumulator->get_value() << " >= 0, jumping to line: " << flip_bits(store[present_instruction->get_operand()]) << endl;
+        
+        if (accumulator->get_value() >= 0)
+        {
+            this->control_instruction = store[present_instruction->get_operand()];
+        }
+        cout << endl;
+        delete accumulator;
+        break;
+    }
+    case 10:
+    {
+        // Just load instead of load negative
+        memory_line* operand_value = new memory_line(this->store[present_instruction->get_operand()]);
+        operand_value->set_value(operand_value->get_value());
+
+        this->accumulator = operand_value->memory_line_to_store_format();
+        cout << "loading value: " << flip_bits(operand_value->memory_line_to_store_format()) << " to accumulator"<< endl;
+
+        delete operand_value;
+        break;
+    }
+    case 11:
+    {
+        // absolute jump, just jumps to line specified in current instruction operand
+        cout << "jumping to line: " << present_instruction->get_operand() << endl;
+        this->control_instruction = flip_bits(present_instruction->get_operand());
         break;
     }
     default:

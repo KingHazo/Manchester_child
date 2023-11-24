@@ -4,8 +4,8 @@
 class simulator
 {
 private:
-    int display[32];
-    int store[32];
+    int display[48];
+    int store[48];
     int accumulator = 0;
     int control_instruction = 0;
     int present_instruction = 0;
