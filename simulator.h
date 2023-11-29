@@ -1,3 +1,8 @@
+/**
+ * Group 1
+ * Alex Barczak, Flynn Henderson, Lucy Thomson, Emma Martin, Martyn Bett
+*/
+
 #ifndef MANCHESTER_BABY_SIMULATOR
 #define MANCHESTER_BABY_SIMULATOR
 
