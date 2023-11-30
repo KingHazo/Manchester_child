@@ -58,6 +58,8 @@ simulator* create_baby(string MC_filename){
 
 void run_baby(simulator* m_baby)
 {
+    //Runs the created Manchester Baby sim
+    //Follows the basic cycle of the Man Baby for a duration of time
     struct timespec remaining, request = {0, 5000000};
 
     while(true){

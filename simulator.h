@@ -8,6 +8,7 @@
 
 class simulator
 {
+//Class attributes
 private:
     int display[48];
     int store[48];
@@ -15,7 +16,7 @@ private:
     int control_instruction = 0;
     int present_instruction = 0;
     bool isStopped = false;
-    
+//Class methods
 public:
     simulator();
     simulator(int const initial_store[]);
