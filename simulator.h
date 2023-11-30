@@ -1,11 +1,16 @@
+/**
+ * Group 1
+ * Alex Barczak, Flynn Henderson, Lucy Thomson, Emma Martin, Martyn Bett
+*/
+
 #ifndef MANCHESTER_BABY_SIMULATOR
 #define MANCHESTER_BABY_SIMULATOR
 
 class simulator
 {
 private:
-    int display[32];
-    int store[32];
+    int display[48];
+    int store[48];
     int accumulator = 0;
     int control_instruction = 0;
     int present_instruction = 0;

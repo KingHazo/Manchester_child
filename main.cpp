@@ -1,22 +1,28 @@
+/**
+ * Group 1
+ * Alex Barczak, Flynn Henderson, Lucy Thomson, Emma Martin, Martyn Bett
+*/
+
 #include <iostream>
-#include <string>
 #include <fstream>
 #include <time.h>
 #include <cstdlib>
 
 #include "simulator.h"
+#include "assembler.h"
+#include "AssemblyError.h"
+#include "FileError.h"
+#include "MachineCodeError.h"
 
 using namespace std;
 
-void menuOptions();
-int getValInput();
-
 void convert_file_to_ints(ifstream& file, int machine_code[]){
     string line;
-    for (int i = 0; i < 32; i++){
+    for (int i = 0; i < 48; i++){
         file >> line;
-        if (line.length() > 32){
-            throw new std::out_of_range("machine code string too large");
+        // if line length isnt 32 then not enough or too many bits so throw exception
+        if (line.length() != 32){
+            throw MachineCodeError("Machine code isn't the right length. Aborting.");
         }
         // string to long is used here instead of string to int because the function
         // assumes the input is unsigned, and would instead only assume a negative value when
@@ -27,34 +33,32 @@ void convert_file_to_ints(ifstream& file, int machine_code[]){
 
 simulator* create_baby(string MC_filename){
     ifstream file;
-    if (MC_filename == ""){
-        return new simulator();
-    } else {
-        file.open(MC_filename);
-        if (file){
-            int machine_code[32];
-            try{
-                convert_file_to_ints(file, machine_code);
-                file.close();
-                return new simulator(machine_code);
-            }
-            catch(const std::exception& e){
-                std::cerr << e.what() << '\n';
-                cout << "initialising simulation with empty store" << endl;
-                file.close();
-                return new simulator();
-            }
-        }
-        file.close();
-        return new simulator();
+    file.open(MC_filename);
+    if(!file){
+        throw FileError("Invalid File name. Failed to run baby.");
     }
-}
+    else{
+        // 48 registers in store so 48 long arrat
+        int machine_code[48];
+        try{
+            convert_file_to_ints(file, machine_code);
+            file.close();
+            return new simulator(machine_code);
+        }
+        // this will be catch machine code error and break;
+        catch(MachineCodeError& mce){
+        std::cerr << mce.what() << endl;
+            file.close();
+            return nullptr;
+        }
+    }
+    file.close();
+    return nullptr;
+    }
 
 void run_baby(simulator* m_baby)
 {
-
     struct timespec remaining, request = {0, 5000000};
-
 
     while(true){
         nanosleep(&request, &remaining);
@@ -64,7 +68,7 @@ void run_baby(simulator* m_baby)
         m_baby->print_store();
         cout << "accumulator: " << endl;
         m_baby->print_accumulator();
-        cout << "current instruction: " << endl;
+        cout << "control instruction: " << endl;
         m_baby->print_current_instruction();
         cout << endl <<"present instruction: " << endl;
         m_baby->print_present_instruction();
@@ -91,7 +95,6 @@ int getValInput()
 
     do
     {
-        //I would never normally be this pedantic in validation
         //Gets input, goes through the input checking each character is a digit and not a char
         cin >> input;
 
@@ -115,12 +118,23 @@ int getValInput()
     
 }
 
+/*
+* Prints menu options
+*/
+void menuOptions()
+{
+    cout << "Please select an option: " << endl;
+    cout << "1. Simulate a program of your choice using machine code" << endl;
+    cout << "2. Compile a program of your choice from assembly code" << endl;
+    cout << "3. Exit the program" << endl;
+}
 
 int main(){
     // variables for menu function
 
     simulator* m_baby;
     string input;
+    string output;
     int result = 0;
     int parseOut;
 
@@ -133,30 +147,41 @@ int main(){
         switch (result)
         {
             case 1:
-                cout << "Option 1 chosen" << endl; // Runs simulator using "marquee.txt"
-                m_baby = create_baby("marquee.txt");
-                run_baby(m_baby);
+                cout << "Option 1 chosen" << endl;
+                cout << "Input name of machine code file you would like to run: ";
+                cin >> input;
+                // flush input stream after getting user input
+                cin.ignore( 256, '\n' );
+                try{
+                    m_baby = create_baby(input);
+                    if(m_baby!=nullptr){
+                        run_baby(m_baby);
+                    }
+                }
+                catch(FileError& fe){
+                    cerr << fe.what() << endl;
+                }
                 break;
             case 2:
                 cout << "Option 2 chosen" << endl;
-                cout << "Unsure if this will work yet lol" << endl;
-                //(I cannot for the life of me decipher some of the sim functions)
-                cout << "Input a filename:";
+                cout << "Input name of assembly language file you would like to turn into machine code: ";
                 cin >> input;
-                cout << endl;
-                m_baby = create_baby(input);
-                run_baby(m_baby);
+                cin.ignore( 256, '\n' );
+                cout << "Input name of file you would like to write machine code to (WARNING: any existing file with the same name will be overwitten): ";
+                cin >> output;
+                cin.ignore( 256, '\n' );
+                try{
+                    encode_from_assembly(input,output);
+                }
+                catch (AssemblyError& ae) {
+                    cerr << ae.what() << endl;
+                }
+                catch(FileError& fe){
+                    cerr << fe.what() << endl;
+                }
                 break;
             case 3:
-                cout << "Option 3 chosen" << endl;
-                cout << "To be implemented when assembler exists" << endl;
-                break;
-            case 4:
-                cout << "Option 4 chosen" << endl;
-                cout << "To be implemented when assembler exists" << endl;
-                break;
-            case 5:
-                cout << "Option 5 chosen, au revoir!" << endl;
+                cout << "Option 3 chosen, au revoir!" << endl;
                 exit(0);
                 break;
             default:
@@ -164,18 +189,4 @@ int main(){
                 break;
         }
     }
-}
-
-/*
-* Prints menu options
-*
-*/
-void menuOptions()
-{
-    cout << "Please select an option: " << endl;
-    cout << "1. Simulate a basic, starter program using machine code" << endl;
-    cout << "2. Simulate a program of your choice using machine code" << endl;
-    cout << "3. Compile a basic program from assembly code" << endl;
-    cout << "4. Compile a program of your choice from assembly code" << endl;
-    cout << "5. Exit the program" << endl;
 }

@@ -1,3 +1,8 @@
+/**
+ * Group 1
+ * Alex Barczak, Flynn Henderson, Lucy Thomson, Emma Martin, Martyn Bett
+*/
+
 #ifndef MEMORY_LINE_H
 #define MEMORY_LINE_H
 

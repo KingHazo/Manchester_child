@@ -1,3 +1,8 @@
+/**
+ * Group 1
+ * Alex Barczak, Flynn Henderson, Lucy Thomson, Emma Martin, Martyn Bett
+*/
+
 #include "memory_line.h"
 
 // adapted from an answer in https://stackoverflow.com/questions/2602823/in-c-c-whats-the-simplest-way-to-reverse-the-order-of-bits-in-a-byte
@@ -14,15 +19,15 @@ int flip_bits(int bits){
 
 memory_line::memory_line(int bits){
     this->operand = flip_bits(bits & 0xFFF80000);
-    this->opcode = flip_bits((bits & 0x00070000) << 13);
-    this->unused_bits = flip_bits((bits & 0x0000FFFF) << 16);
+    this->opcode = flip_bits((bits & 0x00078000) << 13);
+    this->unused_bits = flip_bits((bits & 0x00007FFF) << 17);
 }
 
 int memory_line::memory_line_to_store_format(){
     int bits = 0;
     bits = bits | flip_bits(this->operand);
     bits = bits | flip_bits(this->opcode << 13);
-    bits = bits | flip_bits(this->unused_bits << 16);
+    bits = bits | flip_bits(this->unused_bits << 17);
     return bits;
 }
 
@@ -30,7 +35,7 @@ int memory_line::get_value(){
     int bits = 0;
     bits = bits | this->operand;
     bits = bits | this->opcode << 13;
-    bits = bits | this->unused_bits << 16;
+    bits = bits | this->unused_bits << 17;
 
     return bits;
 }
@@ -49,8 +54,8 @@ int memory_line::get_unused(){
 
 void memory_line::set_value(int value){
     this->operand = value & 0x00001FFF;
-    this->opcode = (value & 0x0000E000) >> 13;
-    this->unused_bits = (value & 0xFFFF0000) >> 16;
+    this->opcode = (value & 0x0001E000) >> 13;
+    this->unused_bits = (value & 0xFFFE0000) >> 17;
 }
 
 void memory_line::set_operand(int operand){
